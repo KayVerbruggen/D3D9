@@ -3,6 +3,8 @@
 #include <Windows.h>
 #include <sstream>
 
+#include <d3dx9.h>
+
 class Window
 {
 public:
@@ -11,14 +13,14 @@ public:
 
 	bool CheckPeekMessage();
 	void HandleMessage();
-
-	void OutputFPS(float DeltaTime);
 	
+	void GetCamPos(D3DXVECTOR3& Position);
+
 	// Bunch of getters
 	HWND& GetWindowHandle();
 	MSG& GetMSG();
-	int GetWidth();
-	int GetHeight();
+	float GetWidth();
+	float GetHeight();
 
 private:
 	HRESULT hr;
@@ -28,8 +30,8 @@ private:
 	MSG Msg;
 
 	// Settings window
-	int m_Width = 1280;
-	int m_Height = 720;
+	float m_Width;
+	float m_Height;
 	const char* m_ClassName = "WindowClass";
 	const char* m_WindowTitle = "WindowD3D9";
 };

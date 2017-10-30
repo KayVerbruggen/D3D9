@@ -10,8 +10,8 @@ Renderer::Renderer(Window& window)
 	ZeroMemory(&m_PresentParams, sizeof(D3DPRESENT_PARAMETERS));
 
 	// Window information
-	m_PresentParams.BackBufferWidth = window.GetWidth();
-	m_PresentParams.BackBufferHeight = window.GetHeight();
+	m_PresentParams.BackBufferWidth = (UINT)window.GetWidth();
+	m_PresentParams.BackBufferHeight = (UINT)window.GetHeight();
 	m_PresentParams.hDeviceWindow = window.GetWindowHandle();
 	m_PresentParams.Windowed = true;
 
@@ -44,8 +44,8 @@ Renderer::Renderer(Window& window)
 
 	Viewport.X = 0;
 	Viewport.Y = 0;
-	Viewport.Width = window.GetWidth();
-	Viewport.Height = window.GetHeight();
+	Viewport.Width = (DWORD)window.GetWidth();
+	Viewport.Height = (DWORD)window.GetHeight();
 	Viewport.MinZ = 0.0f;
 	Viewport.MaxZ = 1.0f;
 

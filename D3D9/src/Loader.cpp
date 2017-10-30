@@ -17,13 +17,13 @@ void Loader::LoadModel(std::string FileName, std::vector<Vertex> &OutVertices, s
 
 	if (!loadedMesh.empty())
 	{
-		for (int i = 0; i < loadedMesh.size(); i++)
+		for (unsigned int i = 0; i < loadedMesh.size(); i++)
 		{
 			if (FileName == loadedMesh[i])
 			{
 				OutVertices = loadedVertices[i];
 				OutIndices = loadedIndices[i];
-				goto einde;
+				goto end;
 			}
 		}
 	}
@@ -41,7 +41,7 @@ void Loader::LoadModel(std::string FileName, std::vector<Vertex> &OutVertices, s
 	OutVertices = ProcessVertices(mesh);
 	OutIndices = ProcessIndices(mesh);
 
-einde:
+end:
 	loadedMesh.push_back(FileName);
 	loadedVertices.push_back(OutVertices);
 	loadedIndices.push_back(OutIndices);

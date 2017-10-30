@@ -1,18 +1,18 @@
 #include "Camera.h"
 
-Camera::Camera(IDirect3DDevice9*& Device)
+Camera::Camera(IDirect3DDevice9*& Device, Window& window)
 {
 	m_pDevice = Device;
 
 	// Default position and rotation
 	Position = D3DXVECTOR3(0.0f, 0.0f, -5.0f);
 	Direction = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-	Up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	Up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);;
 
 	D3DXMatrixLookAtLH(&View, &Position, &Direction, &Up);
 	m_pDevice->SetTransform(D3DTS_VIEW, &View);
 
-	D3DXMatrixPerspectiveFovLH(&Projection, 45, 1.78f, 1.0f, 1000.0f);
+	D3DXMatrixPerspectiveFovLH(&Projection, 45, (window.GetWidth() / window.GetHeight()), 1.0f, 1000.0f);
 	m_pDevice->SetTransform(D3DTS_PROJECTION, &Projection);
 
 	// Disable lighting for now
@@ -24,15 +24,12 @@ Camera::~Camera()
 {
 }
 
-void Camera::Update()
+void Camera::Update(Window& m_Window)
 {
+	m_Window.GetCamPos(Position);
+	Direction = D3DXVECTOR3(Position.x, Position.y, Position.z + 1.0f);
 	D3DXMatrixLookAtLH(&View, &Position, &Direction, &Up);
 	m_pDevice->SetTransform(D3DTS_VIEW, &View);
-}
-
-void Camera::SetPosition(float x, float y, float z)
-{
-	Position = D3DXVECTOR3(-x, -y, z);
 }
 
 void Camera::SetDirection(float x, float y, float z)
