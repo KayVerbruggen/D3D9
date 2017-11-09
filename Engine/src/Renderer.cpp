@@ -13,7 +13,7 @@ Renderer::Renderer(Window& window)
 	m_PresentParams.BackBufferWidth = (UINT)window.GetWidth();
 	m_PresentParams.BackBufferHeight = (UINT)window.GetHeight();
 	m_PresentParams.hDeviceWindow = window.GetWindowHandle();
-	m_PresentParams.Windowed = true;
+	m_PresentParams.Windowed = false;
 
 	// Backbuffer
 	m_PresentParams.BackBufferFormat = D3DFMT_A8R8G8B8;

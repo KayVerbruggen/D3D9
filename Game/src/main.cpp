@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Lighting.h"
 #include "Loader.h"
+#include "GUI.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR CmdLine, int ShowCmd)
 {
@@ -14,6 +15,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR CmdLine, i
 	Renderer renderer(window);
 	IDirect3DDevice9* Device = renderer.GetDevice();
 	Loader loader(Device);
+	GUI gui(Device);
+	gui.AddText("Stupid ass fucking demo", 50.0f, 5.0f);
 
 	Model barrel(Device, loader, "barrel.fbx", "TextureAtlas.png");
 	Model barrel2(Device, loader, "tree.fbx", "TextureAtlas.png");
@@ -28,11 +31,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR CmdLine, i
 	lighting.CreateDirectional(D3DXVECTOR3(-2.0f, 100.0f, 5.0f), D3DXVECTOR3(1.0f, -1.0f, 0.0f));
 
 	// System for getting DeltaTime and FPS
-	__int64 CountsPerSecond;
+	int64_t CountsPerSecond;
 	QueryPerformanceFrequency((LARGE_INTEGER*)&CountsPerSecond);
 	float SecondsPerCount = 1.0f / CountsPerSecond;
 
-	__int64 PrevTime = 0;
+	int64_t PrevTime = 0;
 	QueryPerformanceCounter((LARGE_INTEGER*)&PrevTime);
 
 	// Variables for rotating the cube
@@ -42,42 +45,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR CmdLine, i
 
 	while (window.GetMSG().message != WM_QUIT)
 	{
-		if (window.CheckPeekMessage())
-		{
-			window.HandleMessage();
-		}
-		else
-		{
-			// Capture current time
-			__int64 CurrentTime = 0;
-			QueryPerformanceCounter((LARGE_INTEGER*)&CurrentTime);
-			
-			// Calculate delta time
-			float DeltaTime = (CurrentTime - PrevTime) * SecondsPerCount;
+		window.HandleMessage();
 
-			camera.Update(window);
+		// Capture current time
+		__int64 CurrentTime = 0;
+		QueryPerformanceCounter((LARGE_INTEGER*)&CurrentTime);
 
-			// Rotate cube
-			rotY += 0.5f * DeltaTime;
-			barrel.SetRotation(rotX, rotY, rotZ);
-			barrel2.SetRotation(rotX, rotY, rotZ);
-			barrel3.SetRotation(rotX, rotY, rotZ);
-				
+		// Calculate delta time
+		float DeltaTime = (CurrentTime - PrevTime) * SecondsPerCount;
 
-			// Rendering here.
-			renderer.BeginFrame();
+		camera.Update(DeltaTime);
 
-			barrel.Draw();
-			barrel2.Draw();
-			barrel3.Draw();
+		// Rotate cube
+		rotY += 0.5f * DeltaTime;
+		barrel.SetRotation(rotX, rotY, rotZ);
+		barrel2.SetRotation(rotX, rotY, rotZ);
+		barrel3.SetRotation(rotX, rotY, rotZ);
 
-			renderer.EndFrame();
+		// Rendering here.
+		renderer.BeginFrame();
 
-			// Set previous time to current
-			PrevTime = CurrentTime;
+		gui.Draw();
 
-		}
+		barrel.Draw();
+		barrel2.Draw();
+		barrel3.Draw();
+
+		renderer.EndFrame();
+
+		// Set previous time to current
+		PrevTime = CurrentTime;
 	}
-	
+
 	return 0;
 }

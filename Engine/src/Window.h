@@ -11,10 +11,7 @@ public:
 	Window(HINSTANCE hInstance, UINT ShowCmd);
 	~Window();
 
-	bool CheckPeekMessage();
 	void HandleMessage();
-	
-	void GetCamPos(D3DXVECTOR3& Position);
 
 	// Bunch of getters
 	HWND& GetWindowHandle();

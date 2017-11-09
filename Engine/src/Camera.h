@@ -11,7 +11,7 @@ public:
 	Camera(IDirect3DDevice9*& Device, Window& window);
 	~Camera();
 
-	void Update(Window& m_Window);
+	void Update(float DeltaTime);
 	void SetDirection(float x, float y, float z);
 
 private:
@@ -19,4 +19,6 @@ private:
 
 	D3DXMATRIX View, Projection;
 	D3DXVECTOR3 Position, Direction, Up;
+
+	float MovementSpeed = 2.0f;
 };
