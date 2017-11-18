@@ -27,8 +27,7 @@ private:
 	MSG Msg;
 
 	// Settings window
-	float m_Width;
-	float m_Height;
+	float m_Width, m_Height;
 	const char* m_ClassName = "WindowClass";
 	const char* m_WindowTitle = "WindowD3D9";
 };

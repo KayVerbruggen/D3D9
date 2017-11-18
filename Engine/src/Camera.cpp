@@ -10,16 +10,18 @@ enum Keys : WPARAM
 Camera::Camera(IDirect3DDevice9*& Device, Window& window)
 {
 	m_pDevice = Device;
+	m_Width = window.GetWidth();
+	m_Height = window.GetHeight();
 
 	// Default position and rotation
 	Position = D3DXVECTOR3(0.0f, 0.0f, -5.0f);
 	Direction = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-	Up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);;
+	Up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
 	D3DXMatrixLookAtLH(&View, &Position, &Direction, &Up);
 	m_pDevice->SetTransform(D3DTS_VIEW, &View);
 
-	D3DXMatrixPerspectiveFovLH(&Projection, 45, (window.GetWidth() / window.GetHeight()), 1.0f, 1000.0f);
+	D3DXMatrixPerspectiveFovLH(&Projection, 45, (m_Width / m_Height), 1.0f, 1000.0f);
 	m_pDevice->SetTransform(D3DTS_PROJECTION, &Projection);
 
 	// Disable lighting for now
@@ -37,40 +39,70 @@ void Camera::Update(float DeltaTime)
 	if(GetAsyncKeyState(A))
 	{
 		// Go left.
-		Position.x -= MovementSpeed * DeltaTime;
+		MovementHorizontal = -MovementSpeed * DeltaTime;
 	}
 	if (GetAsyncKeyState(D))
 	{
 		// Go right.
-		Position.x += MovementSpeed * DeltaTime;
+		MovementHorizontal = MovementSpeed * DeltaTime;
 	}
 	if (GetAsyncKeyState(W))
 	{
 		// Go forward.
-		Position.z += MovementSpeed * DeltaTime;
+		MovementForward = MovementSpeed * DeltaTime;
 	}
 	if (GetAsyncKeyState(S))
 	{
 		// Go backwards.
-		Position.z -= MovementSpeed * DeltaTime;
-	}
-	if (GetAsyncKeyState(VK_LSHIFT))
-	{
-		// Go forward.
-		Position.y += MovementSpeed * DeltaTime;
-	}
-	if (GetAsyncKeyState(VK_LCONTROL))
-	{
-		// Go backwards.
-		Position.y -= MovementSpeed * DeltaTime;
+		MovementForward = -MovementSpeed * DeltaTime;
 	}
 
-	Direction = D3DXVECTOR3(Position.x, Position.y, Position.z + 1.0f);
+	// Get the cursor position
+	GetCursorPos(&CursorPoint);
+
+	// Check if the cursor has moved
+	if (CursorPoint.x != LastCursorPoint.x)
+	{
+		// Use delta x to rotate
+		CamYaw += (CursorPoint.x - LastCursorPoint.x) * (MouseSensitivity / 100.0f);
+	}
+	if (CursorPoint.y != LastCursorPoint.y)
+	{
+		// Use delta y to rotate
+		CamPitch += (CursorPoint.y - LastCursorPoint.y) * (MouseSensitivity / 100.0f);
+
+		// No backflips
+		if (CamPitch >= 90)
+		{
+			CamPitch = 90;
+		} else if (CamPitch <= -90)
+		{
+			CamPitch = -90;
+		}
+	}
+
+	D3DXMatrixRotationYawPitchRoll(&Rotation, D3DXToRadian(CamYaw), D3DXToRadian(CamPitch), 0);
+	D3DXVec3TransformCoord(&Direction, &DefaultForward, &Rotation);
+	D3DXVec3Normalize(&Direction, &Direction);
+	
+	D3DXMATRIX RotateYTempMatrix;
+	D3DXMatrixRotationY(&RotateYTempMatrix, D3DXToRadian(CamYaw));
+
+	D3DXVec3TransformCoord(&Right, &DefaultRight, &RotateYTempMatrix);
+	D3DXVec3TransformCoord(&Up, &Up, &RotateYTempMatrix);
+	D3DXVec3TransformCoord(&Forward, &DefaultForward, &RotateYTempMatrix);
+
+	Position += MovementHorizontal * Right;
+	Position += MovementForward * Forward;
+
+	MovementHorizontal = 0.0f;
+	MovementForward = 0.0f;
+
+	Direction = Position + Direction;
+
 	D3DXMatrixLookAtLH(&View, &Position, &Direction, &Up);
 	m_pDevice->SetTransform(D3DTS_VIEW, &View);
-}
-
-void Camera::SetDirection(float x, float y, float z)
-{
-	Direction = D3DXVECTOR3(-x, -y, z);
+	
+	// Lock the cursor to the middle of the screen so it can't hit the border
+	SetCursorPos(GetSystemMetrics(SM_CXSCREEN) / 2, GetSystemMetrics(SM_CYSCREEN) / 2);
 }

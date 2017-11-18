@@ -29,8 +29,6 @@ private:
 	IDirect3DTexture9* m_Tex;
 	D3DMATERIAL9 Material;
 
-	D3DXMATRIX World;
-
 	std::vector<Vertex> vertices;
 	std::vector<WORD> indices;
 
@@ -38,7 +36,7 @@ private:
 	float rotY;
 	float rotZ;
 
-	D3DXMATRIX Scale, rX, rY, rZ, Translation;
+	D3DXMATRIX Scale, rX, rY, rZ, Translation, World;
 
 	int NumIndex;
 };

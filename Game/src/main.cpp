@@ -5,6 +5,8 @@
 #include "Lighting.h"
 #include "Loader.h"
 #include "GUI.h"
+#include "Time.hpp"
+#include "Terrain.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR CmdLine, int ShowCmd)
 {
@@ -14,29 +16,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR CmdLine, i
 	Window window(hInstance, ShowCmd);
 	Renderer renderer(window);
 	IDirect3DDevice9* Device = renderer.GetDevice();
+
 	Loader loader(Device);
 	GUI gui(Device);
-	gui.AddText("Stupid ass fucking demo", 50.0f, 5.0f);
+	gui.AddText("Dit is een demo", 50.0f, 5.0f);
 
 	Model barrel(Device, loader, "barrel.fbx", "TextureAtlas.png");
-	Model barrel2(Device, loader, "tree.fbx", "TextureAtlas.png");
-	barrel2.SetTranslation(2.5f, -1.0f, 0.0f);
-	Model barrel3(Device, loader, "barrel.fbx", "TextureAtlas.png");
-	barrel3.SetTranslation(-2.5f, 0.0f, 0.0f);
+	Model tree(Device, loader, "tree.fbx", "TextureAtlas.png");
+	tree.SetTranslation(2.5f, -1.0f, 0.0f);
+	Model barrel2(Device, loader, "barrel.fbx", "TextureAtlas.png");
+	barrel2.SetTranslation(-2.5f, 0.0f, 0.0f);
 
+	Terrain terrain(Device, "grass.png");
 	Camera camera(Device, window);
 	Lighting lighting(Device);
 
 	// Create lights
 	lighting.CreateDirectional(D3DXVECTOR3(-2.0f, 100.0f, 5.0f), D3DXVECTOR3(1.0f, -1.0f, 0.0f));
+	// lighting.EnablePixelFog((DWORD)D3DCOLOR_RGBA(255, 255, 255, 5), D3DFOG_EXP);
 
-	// System for getting DeltaTime and FPS
-	int64_t CountsPerSecond;
-	QueryPerformanceFrequency((LARGE_INTEGER*)&CountsPerSecond);
-	float SecondsPerCount = 1.0f / CountsPerSecond;
-
-	int64_t PrevTime = 0;
-	QueryPerformanceCounter((LARGE_INTEGER*)&PrevTime);
+	StartTimer();
 
 	// Variables for rotating the cube
 	float rotX = 0.0f;
@@ -46,35 +45,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR CmdLine, i
 	while (window.GetMSG().message != WM_QUIT)
 	{
 		window.HandleMessage();
-
-		// Capture current time
-		__int64 CurrentTime = 0;
-		QueryPerformanceCounter((LARGE_INTEGER*)&CurrentTime);
-
-		// Calculate delta time
-		float DeltaTime = (CurrentTime - PrevTime) * SecondsPerCount;
-
+		UpdateTimer();
 		camera.Update(DeltaTime);
 
 		// Rotate cube
 		rotY += 0.5f * DeltaTime;
 		barrel.SetRotation(rotX, rotY, rotZ);
 		barrel2.SetRotation(rotX, rotY, rotZ);
-		barrel3.SetRotation(rotX, rotY, rotZ);
+		tree.SetRotation(rotX, rotY, rotZ);
 
 		// Rendering here.
 		renderer.BeginFrame();
 
+		terrain.Draw();
 		gui.Draw();
 
 		barrel.Draw();
 		barrel2.Draw();
-		barrel3.Draw();
+		tree.Draw();
 
 		renderer.EndFrame();
 
-		// Set previous time to current
-		PrevTime = CurrentTime;
+		SetPrevTime();
 	}
 
 	return 0;

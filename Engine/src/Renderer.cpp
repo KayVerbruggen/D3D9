@@ -4,7 +4,7 @@ Renderer::Renderer(Window& window)
 {
 	m_pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
 	if (!m_pD3D9)
-		MessageBoxA(0, "Creating D3D9 failed!", "Error", MB_OK);
+		MessageBox(0, "Creating D3D9 failed!", "Error", MB_OK);
 
 	// Fill out parameters for presenting the back buffer
 	ZeroMemory(&m_PresentParams, sizeof(D3DPRESENT_PARAMETERS));
@@ -13,15 +13,22 @@ Renderer::Renderer(Window& window)
 	m_PresentParams.BackBufferWidth = (UINT)window.GetWidth();
 	m_PresentParams.BackBufferHeight = (UINT)window.GetHeight();
 	m_PresentParams.hDeviceWindow = window.GetWindowHandle();
-	m_PresentParams.Windowed = false;
+	m_PresentParams.Windowed = m_Windowed;
 
 	// Backbuffer
 	m_PresentParams.BackBufferFormat = D3DFMT_A8R8G8B8;
 	m_PresentParams.BackBufferCount = 1;
 
 	// MSAA
+	DWORD MSAA_QualityLevels;
+	hr = m_pD3D9->CheckDeviceMultiSampleType(	D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_A8R8G8B8,
+												m_Windowed, D3DMULTISAMPLE_8_SAMPLES, &MSAA_QualityLevels);
+
+	if (hr != S_OK)
+		MessageBox(0, "Failed to get MSAA quality!", "Error", MB_OK);
+
 	m_PresentParams.MultiSampleType = D3DMULTISAMPLE_8_SAMPLES;
-	m_PresentParams.MultiSampleQuality = 0;
+	m_PresentParams.MultiSampleQuality = MSAA_QualityLevels - 1;
 	
 	// Depth stencil
 	m_PresentParams.EnableAutoDepthStencil = true;
@@ -36,7 +43,7 @@ Renderer::Renderer(Window& window)
 							D3DCREATE_HARDWARE_VERTEXPROCESSING, &m_PresentParams, &m_pDevice);
 
 	if (hr != S_OK)
-		MessageBoxA(0, "Creating D3D9 Device failed!", "Error", MB_OK);
+		MessageBox(0, "Creating D3D9 Device failed!", "Error", MB_OK);
 
 	// Make viewport
 	D3DVIEWPORT9 Viewport;
@@ -66,6 +73,12 @@ void Renderer::BeginFrame()
 {
 	m_pDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(255, 150, 125), 1.0f, 0);
 	m_pDevice->BeginScene();
+
+	// Wireframe mode just for fun.
+	if (GetAsyncKeyState(VK_TAB))
+		m_pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	else
+		m_pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 }
 
 void Renderer::EndFrame()

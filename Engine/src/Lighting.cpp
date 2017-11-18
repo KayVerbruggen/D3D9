@@ -69,3 +69,29 @@ void Lighting::CreatePoint(D3DXVECTOR3 Position, D3DXVECTOR3 Direction)
 
 	Index++;
 }
+
+void Lighting::EnablePixelFog(DWORD Color, DWORD Mode)
+{
+	float Start = 0.5f;
+	float End = 35.0f;
+	float Density = 0.1f;
+
+	// Enable fog blending.
+	m_pDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
+
+	// Set the fog color.
+	m_pDevice->SetRenderState(D3DRS_FOGCOLOR, Color);
+
+	// Set fog parameters.
+	if (Mode == D3DFOG_LINEAR)
+	{
+		m_pDevice->SetRenderState(D3DRS_FOGTABLEMODE, Mode);
+		m_pDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD *)(&Start));
+		m_pDevice->SetRenderState(D3DRS_FOGEND, *(DWORD *)(&End));
+	}
+	else
+	{
+		m_pDevice->SetRenderState(D3DRS_FOGTABLEMODE, Mode);
+		m_pDevice->SetRenderState(D3DRS_FOGDENSITY, *(DWORD *)(&Density));
+	}
+}

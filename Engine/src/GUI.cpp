@@ -20,14 +20,14 @@ void GUI::AddText(std::string Text, float PosX, float PosY)
 	PosY = (PosY / 100) * GetSystemMetrics(SM_CYSCREEN) - 20;
 
 	RECT Rect;
-	SetRect(&Rect, PosX, PosY, PosX + (18 * Text.size()), PosY + 40);
+	SetRect(&Rect, (int)PosX, (int)PosY, (int)PosX + (18 * Text.size()), (int)PosY + 40);
 	Rects.push_back(Rect);
 	Texts.push_back(Text);
 }
 
 void GUI::Draw()
 {
-	for (int i = 0; i < Texts.size(); i++)
+	for (unsigned int i = 0; i < Texts.size(); i++)
 	{
 		m_Font->DrawTextA(NULL, Texts[i].c_str(), -1, &Rects[i], DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(0, 100, 255));
 	}

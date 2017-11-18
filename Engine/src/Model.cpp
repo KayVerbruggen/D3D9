@@ -20,12 +20,12 @@ Model::Model(IDirect3DDevice9*& Device, Loader& modelLoader, std::string ModelFi
 	// Create Buffers
 	hr = m_pDevice->CreateVertexBuffer(vertices.size() * sizeof(Vertex), 0, Vertex::FVF, D3DPOOL_MANAGED, &m_VB, 0);
 	if (hr != S_OK)
-		MessageBoxA(0, "Creation of vertex buffer failed!", "Error", MB_OK);
+		MessageBox(0, "Creation of vertex buffer failed!", "Error", MB_OK);
 
 	hr = m_pDevice->CreateIndexBuffer(indices.size() * sizeof(WORD), D3DUSAGE_WRITEONLY, D3DFMT_INDEX16,
 										D3DPOOL_MANAGED, &m_IB, NULL);
 	if (hr != S_OK)
-		MessageBoxA(0, "Creation of index buffer failed!", "Error", MB_OK);
+		MessageBox(0, "Creation of index buffer failed!", "Error", MB_OK);
 
 	// Copy data to vertex buffer
 	VOID* pVerts;

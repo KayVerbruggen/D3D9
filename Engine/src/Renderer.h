@@ -21,4 +21,6 @@ private:
 	IDirect3D9* m_pD3D9;
 	IDirect3DDevice9* m_pDevice;
 	D3DPRESENT_PARAMETERS m_PresentParams;
+
+	bool m_Windowed = true;
 };

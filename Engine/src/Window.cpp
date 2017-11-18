@@ -65,6 +65,7 @@ Window::Window(HINSTANCE hInstance, UINT ShowCmd)
 		MessageBoxA(0, "WindowHandle is still NULL", "Error", MB_OK);
 
 	ShowWindow(m_WindowHandle, ShowCmd);
+	ShowCursor(FALSE);
 
 	UpdateWindow(m_WindowHandle);
 
